@@ -149,11 +149,6 @@ export default function FormPage() {
         else newErrors.password = "";
         break;
 
-      case "orgname":
-        if (!value) newErrors.orgname = "Please complete this required file.";
-        else newErrors.orgname = "";
-        break;
-
       default:
     }
 
