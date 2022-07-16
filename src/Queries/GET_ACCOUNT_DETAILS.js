@@ -6,11 +6,6 @@ export const GET_Account_Details = gql`
     userid
     email
     username
-    createdon
-    password
   }
 }
 `;
-
-
-
