@@ -34,14 +34,13 @@ const useStyles = makeStyles((theme) => ({
     padding: "2.4rem 2.4rem 4rem 2.4rem",
   },
   title: {
-    marginLeft: "1.4rem",
-    marginBottom: "4rem",
-    fontSize: "20px",
+    marginBottom: "1rem",
+    fontSize: "26px",
     lineHeight: "28px",
     fontWeight: "600",
 
     [theme.breakpoints.down("xs")]: {
-      marginBottom: "2.4rem",
+      marginBottom: "0.8rem",
       fontSize: "20px",
       lineHeight: "28px",
       fontWeight: "600",
@@ -59,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#FFFFFF",
     fontSize: "1.8rem",
     fontWeight: "600",
+    marginBottom:'1rem',
     padding: "1.6rem 3.2rem",
     borderRadius: "8px",
     lineHeight: "24px",
@@ -85,7 +85,10 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: "column",
     },
   },
-
+  toogleSignup: {
+    fontSize: "18px",
+    color:"#3846FE"
+},
   errorText: {
     fontSize: "14px",
     fontWeight: "400",
@@ -145,7 +148,9 @@ export default function FormPage() {
         break;
 
       case "password":
-        if (!value) newErrors.password = "Please select any one option.";
+        if (value?.length < 6) newErrors.password = "Password must contain minimum 6 characters";
+        else if (!/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(value))
+          newErrors.password = "Password must contain atleast one capital letter, a small letter, a number, a special character";
         else newErrors.password = "";
         break;
 
@@ -197,6 +202,11 @@ export default function FormPage() {
     setLoading(true);
     return true;
   };
+
+  const toggleSignUp = (path) => {
+    setIsSignUp(!isSignUp);
+    history.push('/path');
+  }
 
 
   return (
@@ -255,8 +265,15 @@ export default function FormPage() {
                   type="submit"
                 >
                   {isSignUp? 'Sign up':'Sign in'}
-                </Button>
+                  </Button>
+                  
               )}
+              Or
+              <div className={classes.toogleSignup} onClick={() => toggleSignUp( isSignUp ? 'signin' : 'signup') }>{isSignUp?'Alraedy have an account':'Create new account'}</div>
+            </Grid>
+            <Grid item xs={12}>
+              
+               
             </Grid>
             {errors.otherErrors && (
               <Grid item xs={12} className={classes.hiddenDiv}>
