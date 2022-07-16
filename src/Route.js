@@ -3,8 +3,7 @@ import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import Loader from './components/Loader';
 import './index.css';  
 import Home from './views/Home';
-import SignIn from './views/SignIn';
-import SignUp from './views/SignUp';
+import FormPage from './views/FormPage';
 
 const RouteTo = () => {
     console.log(1)
@@ -12,10 +11,10 @@ const RouteTo = () => {
          <Suspense fallback={<Loader />}>
             <Router>
             <Switch>
-                <Route exact path="/" component={SignIn} />
-                <Route path="/signup" component={SignUp} />
+                <Route exact path="/" component={FormPage} />
+                <Route path="/signup" component={FormPage} />
                 <Route path="/home" component={Home} />
-                <Route path="*" component={SignIn} />
+                <Route path="*" component={FormPage} />
                 </Switch>
                 </Router>
        </Suspense>
