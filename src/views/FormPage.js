@@ -14,13 +14,14 @@ import {Button} from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import CustomizedTextField from '../components/CustomizedTextField;';
 import { checkUserAlreadyLoggedIn, checkValidObject, setCurrentUserDetails } from '../utils/reusableFunctions';
+import { sendDataToSentry } from '../index';
 
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: 'auto',
       maxWidth: "35rem",
-    padding: "100px 0",
+    paddingTop: "3.5rem",
     [theme.breakpoints.down("sm")]: {
       padding: "0 50px",
     },
@@ -151,6 +152,7 @@ export default function FormPage() {
         setLoading(false)
       },
       onError: (err) => {
+        setErrors({...errors,otherErrors:'Something went wrong'})
         sendDataToSentry({
           name: 'Sign up',
           message: 'User Sign up failed',

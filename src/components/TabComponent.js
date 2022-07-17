@@ -15,7 +15,8 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import * as mutationQueries from '../Queries/Mutations'
 import { GET_Posts_Details } from '../Queries/GET_POSTS_DETAILS';
 import { GET_Posts_Likes_Details } from '../Queries/GET_POSTS_LIKES_DETAILS';
-import { checkValidArray, getCurrentUserDetails } from '../utils/reusableFunctions';
+import { checkValidArray, DateFormatter, getCurrentUserDetails } from '../utils/reusableFunctions';
+import { sendDataToSentry } from '../index';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop:'1rem'
   },
   displayLikes: {
-  margin: '0.5rem'
+  marginTop: '1.5rem'
   },
   noPostsContainer: {
   color: "#939FC0",
@@ -53,6 +54,23 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const styles = {
+  card: { alignItems: 'flex-start', paddingTop: '12px' },
+  avatar: { height: '62px', width: '62px', fontSize: '26px' },
+  headerTypo: {
+    fontSize: '12px',
+    fontWeight: '600',
+    lineHeight: '20px',
+    color: '#364153',
+    textTransform: 'capitalize',
+  },
+  subHeaderTypo: {
+    fontSize: '11px',
+    lineHeight: '12px',
+    color: '#626F84',
+  },
+};
+
 export default function TabComp({myPosts,userid=null}) {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
@@ -60,28 +78,16 @@ export default function TabComp({myPosts,userid=null}) {
   const [likesData, setLikesData] = useState([]);
   const [errors, setErrors] = useState('');
   const currentUser = getCurrentUserDetails();
-  
-  let selectedPostDetails = {};
-  let mutationQuery = mutationQueries.Insert_Post_Like;
+  const [open, setOpen] = React.useState(false);
 
-  const [mutateData] = useMutation(  
-    mutationQuery,
-    {
-      onCompleted: (res) => {
-        console.log(res);
-        getPost(true);
-      },
-      onError: (err) => {
-        console.error(err);
-        sendDataToSentry({
-          name: 'Posts mutation',
-          message: err.message,
-          tags: { severity: 'CRITICAL' },
-          extra: [{ type: 'errorEncounter', err }],
-        });
-      },
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
     }
-  );
+
+    setOpen(false);
+  };
+
 
   const [fetchData] = useLazyQuery(   
     GET_Posts_Details,
@@ -112,10 +118,28 @@ export default function TabComp({myPosts,userid=null}) {
      }
   );
 
-  const addPost = (postText='') => {
-    mutationQuery = mutationQueries.Insert_Post_Details;
+const [addPostMutation] = useMutation(  
+    mutationQueries.Insert_Post_Details,
+    {
+      onCompleted: (res) => {
+        console.log(res);
+        getPost(true);
+      },
+      onError: (err) => {
+        console.error(err);
+        sendDataToSentry({
+          name: 'Posts mutation',
+          message: err.message,
+          tags: { severity: 'CRITICAL' },
+          extra: [{ type: 'errorEncounter', err }],
+        });
+      },
+    }
+    );
+  const addPost = async (postText = '') => {
+    
     setLoading(true);
-    mutateData(
+    await addPostMutation(
           {
             variables: {
               object: {
@@ -129,10 +153,29 @@ export default function TabComp({myPosts,userid=null}) {
           })
   }
 
-  const editPost = (postid,postText='') => {
-    mutationQuery = mutationQueries.Update_Post_Details;
+  const [editPostMutation] = useMutation(  
+    mutationQueries.Update_Post_Details,
+    {
+      onCompleted: (res) => {
+        console.log(res);
+        getPost(true);
+      },
+      onError: (err) => {
+        console.error(err);
+        sendDataToSentry({
+          name: 'Posts mutation',
+          message: err.message,
+          tags: { severity: 'CRITICAL' },
+          extra: [{ type: 'errorEncounter', err }],
+        });
+      },
+    }
+    );
+  const editPost = async (postid, postText = '') => {
+    
+    
     setLoading(true);
-    mutateData(
+    await editPostMutation(
           {
             variables: {
               postid: postid,
@@ -144,10 +187,28 @@ export default function TabComp({myPosts,userid=null}) {
           })
   }
   
-  const deletePost = (postid) => {
-    mutationQuery = mutationQueries.Delete_Posts_Details
+   const [deletePostMutation] = useMutation(  
+    mutationQueries.Delete_Posts_Details,
+    {
+      onCompleted: (res) => {
+        console.log(res);
+        getPost(true);
+      },
+      onError: (err) => {
+        console.error(err);
+        sendDataToSentry({
+          name: 'Posts mutation',
+          message: err.message,
+          tags: { severity: 'CRITICAL' },
+          extra: [{ type: 'errorEncounter', err }],
+        });
+      },
+    }
+    );
+  const deletePost = async (postid) => {
+    
     setLoading(true);
-    mutateData(
+    await deletePostMutation(
           {
             variables: {
               postid:postid
@@ -155,14 +216,32 @@ export default function TabComp({myPosts,userid=null}) {
           })
   }
 
-  const addLike = (postid) => {
-    mutationQuery = mutationQueries.Insert_Post_Like
+  const [addLikeMutation] = useMutation(  
+    mutationQueries.Insert_Post_Like,
+    {
+      onCompleted: (res) => {
+        console.log(res);
+        getPost(true);
+      },
+      onError: (err) => {
+        console.error(err);
+        sendDataToSentry({
+          name: 'Posts mutation',
+          message: err.message,
+          tags: { severity: 'CRITICAL' },
+          extra: [{ type: 'errorEncounter', err }],
+        });
+      },
+    }
+    );
+  const addLike = async (postid) => {
+
     setLoading(true);
-    mutateData(
+   await addLikeMutation(
           {
             variables: {
               object: {
-                postid: 1,
+                postid: postid,
                 likedby:   currentUser.username,
                 userid: currentUser.userid,
                 likedon: new Date().toISOString()
@@ -171,10 +250,29 @@ export default function TabComp({myPosts,userid=null}) {
           })
   }
 
-  const deleteLike = (postid) => {
-    mutationQuery = mutationQueries.Delete_Post_Like;
+  const [deleteLikeMutation] = useMutation(  
+    mutationQueries.Delete_Post_Like,
+    {
+      onCompleted: (res) => {
+        console.log(res);
+        getPost(true);
+      },
+      onError: (err) => {
+        console.error(err);
+        sendDataToSentry({
+          name: 'Posts mutation',
+          message: err.message,
+          tags: { severity: 'CRITICAL' },
+          extra: [{ type: 'errorEncounter', err }],
+        });
+      },
+    }
+    );
+  const deleteLike = async (postid) => {
+    
+    console.log(postid,currentUser.userid)
     setLoading(true);
-    mutateData(
+    await deleteLikeMutation(
           {
             variables: {
               postid: postid,
@@ -183,10 +281,10 @@ export default function TabComp({myPosts,userid=null}) {
           })
   }
 
-  const getPost = (dontsetLoading = false) => {
+  const getPost = async (dontsetLoading = false) => {
     if(!dontsetLoading)
       setLoading(true);
-    fetchData({ variables: { userid: userid } })
+    await fetchData({ variables: { userid: userid } })
   }
 
   const getLikes = (dontsetLoading = false) => {
@@ -218,41 +316,56 @@ export default function TabComp({myPosts,userid=null}) {
 
   return (
     <div className={classes.root}>
+
       {loading && <Loader />}
+      {errors && (<Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          {errors}
+        </Alert>
+      </Snackbar>)}
+
       <Paper elevation={0} className={classes.paperRoot}>
-        {checkValidArray(postsData) ? postsData.map((post) => {
+        {checkValidArray(postsData) ? postsData.map((post,index) => {
 
           const likesCount = post?.allLikes?.countNode?.count ?? 0;
           const isCurrentUserLiked = Boolean(post?.mylike?.likeid);
-          let displayLikesCount = isCurrentUserLiked ? `You and ${likesCount - 1} others liked this post` : `${likesCount - 1} people liked this post`
+          console.log(isCurrentUserLiked,post.email)
+          let displayLikesCount = isCurrentUserLiked ? `You and ${likesCount - 1} other(s) liked this post` : `${likesCount} people liked this post`
           if (isCurrentUserLiked && likesCount - 1 < 1)
-            displayLikesCount='You liked this post'
+            displayLikesCount = 'You liked this post'
+          const postedOn=DateFormatter(post?.postedon)?.split(',')
 
           return (<Card className={classes.cardRoot}>
-            <div className={classes.cardContainer}>
-              <div >
-                <div className={classes.profileCard}>
+            <div key={index } className={classes.cardContainer}>
+              <div key={index+1 }>
+                <div key={index+2} className={classes.profileCard}>
                   <ProfileCard
                     header={post.postedby}
                     userName={post.postedby}
-                    postedOn={post.email}
-              
+                    subHeader={post.email}
+                    postedOn={{keyName:'Posted on : ', date:postedOn?.[0], time:postedOn?.[1]}}
+                    styles={{
+                      avatar: styles.avatar,
+                      headerTypo: styles.headerTypo,
+                      subHeaderTypo: styles.subHeaderTypo,
+                      headerGridDiv: styles.headerGridDiv,
+              }}
                   />
                 </div>
-                <CardContent className={classes.cardContent}>
+                <CardContent key={index+3} className={classes.cardContent}>
                   <Typography gutterBottom variant="h5" component="h2">
                     Post text
                   </Typography>
                   <Typography variant="body2" color="textSecondary" component="p">
-                    {post?.postText ?? '' }
+                    {post?.posttext ?? '' }
                   </Typography>
                   {likesCount>0 && (<Typography variant="body2" color="textSecondary" component="p" className={classes.displayLikes}>
                     {displayLikesCount }
                   </Typography>)}
                 </CardContent>
               </div>
-              <CardActions className={classes.cardActionsRoot}>
-                <Button size="small" color="primary" onClick={()=>isCurrentUserLiked ? deleteLike(post.postid) : addLike(post.postid)}>
+              <CardActions key={index+4} className={classes.cardActionsRoot}>
+                <Button size="small" color="primary" onClick={() => { isCurrentUserLiked ?  deleteLike(post.postid) : addLike(post.postid) }}>
                   {isCurrentUserLiked ? 'Unlike' : 'Like'}
                 </Button>
                 <Button size="small" color="primary" onClick={()=>deletePost(post.postid)}>

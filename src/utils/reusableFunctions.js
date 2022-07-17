@@ -50,9 +50,9 @@ export const SafeJsonParser = (value) => {
 
 export const setCurrentUserDetails = (userid,username,email) => {
   try {
-    sessionStorage.setItem('userid', userid);
-    sessionStorage.setItem('username', username);
-    sessionStorage.setItem('email', email);
+    localStorage.setItem('loggedInUserid', userid);
+    localStorage.setItem('loggedInUsername', username);
+    localStorage.setItem('loggedInEmail', email);
   } catch (error) {
     console.error(error);
     sendDataToSentry({
@@ -68,9 +68,9 @@ export const getCurrentUserDetails = () => {
   let user = {};
   try {
     user = {
-      userid : sessionStorage.getItem('userid'),
-      username : sessionStorage.getItem('username'),
-      email : sessionStorage.getItem('email'),
+      userid : localStorage.getItem('loggedInUserid'),
+      username : localStorage.getItem('loggedInUsername'),
+      email : localStorage.getItem('loggedInEmail'),
     }
   } catch (error) {
     console.error(error)
