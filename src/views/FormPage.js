@@ -99,7 +99,12 @@ const useStyles = makeStyles((theme) => ({
   },
   toogleSignup: {
     fontSize: "18px",
-    color:"#3846FE"
+    cursor: 'pointer',
+    color: "#3846FE",
+    marginTop:'0.5rem',
+    '&:hover': {
+      textDecoration: 'underline'
+    },
 },
   errorText: {
     fontSize: "14px",
@@ -278,7 +283,7 @@ export default function FormPage() {
                   
               )}
               Or
-              <div className={classes.toogleSignup} onClick={() => toggleSignUp( isSignUp ? 'signin' : 'signup') }>{isSignUp?'Alraedy have an account':'Create new account'}</div>
+              <div className={classes.toogleSignup} onClick={() => toggleSignUp( isSignUp ? 'signin' : 'signup') }>{isSignUp?'Already have an account':'Create new account'}</div>
             </Grid>
             <Grid item xs={12}>
               
