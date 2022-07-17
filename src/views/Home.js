@@ -45,7 +45,8 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "0px 24px 40px rgba(3, 23, 111, 0.06)",
     padding: "0.7rem",
     alignItems: 'center',
-    position:'static'
+    position: 'fixed',
+    zIndex: 1000,
   },
   logoutButton: {
     background: "#ff3421",
@@ -194,7 +195,7 @@ export default function Home() {
           <TabComponent myPosts={false } />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <TabComponent  myPosts={true }/>
+          <TabComponent myPosts={true} userid={user.userid } />
       </TabPanel>
         </Grid>
     </div>
