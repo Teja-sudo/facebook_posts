@@ -1,4 +1,39 @@
 import { sendDataToSentry } from "..";
+import moment from 'moment';
+
+export const DateFormatter = (
+  newDate,
+  dateOnly = false,
+  secondsToDate = false
+) => {
+  let date = new Date(newDate);
+  if (secondsToDate) date = new Date(newDate * 1000);
+
+  if (date.toString() === 'Invalid Date') return '--';
+  if (dateOnly) {
+    date = moment(date).format('DD MMM YYYY');
+    return date;
+  }
+  date = moment(date).format('DD MMM YYYY, hh:mm A');
+  return date;
+};
+
+export const checkValidArray = (property, allowZero) => {
+  if (Array.isArray(property)) {
+    if (property.length > 0 || allowZero) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const checkValidObject = (property) => {
+  if (!property) {
+    property = {};
+  }
+  return typeof property === 'object' && Object.keys(property).length > 0;
+};
+
 
 export const SafeJsonParser = (value) => {
   let data = value;
@@ -15,25 +50,35 @@ export const SafeJsonParser = (value) => {
 
 export const setCurrentUserDetails = (userid,username,email) => {
   try {
-    const user =JSON.stringify({userid:userid,username:username,email:email});
-     sessionStorage.setItem('currentUser',user)
+    sessionStorage.setItem('userid', userid);
+    sessionStorage.setItem('username', username);
+    sessionStorage.setItem('email', email);
   } catch (error) {
-    console.error(error)
-    sessionStorage.setItem('currentUser','')
+    console.error(error);
+    sendDataToSentry({
+          name: 'Log in',
+          message: 'User Login failed',
+          tags: { severity: 'CRITICAL' },
+          extra: [{ type: 'errorEncounter', error }],
+        });
   }
 }
 
 export const getCurrentUserDetails = () => {
   let user = {};
   try {
-     user=JSON.parse( sessionStorage.getItem('currentUser'));
+    user = {
+      userid : sessionStorage.getItem('userid'),
+      username : sessionStorage.getItem('username'),
+      email : sessionStorage.getItem('email'),
+    }
   } catch (error) {
     console.error(error)
      sendDataToSentry({
           name: 'Log in',
           message: 'User Login failed',
           tags: { severity: 'CRITICAL' },
-          extra: [{ type: 'errorEncounter', err }],
+          extra: [{ type: 'errorEncounter', error }],
         });
     user = {};
   }

@@ -57,8 +57,8 @@ const useStyles = makeStyles(() => ({
 const CustomizedTextField = ({
   name,
   type = "text",
-  placeholder = "Enter Text here",
-  label,
+  placeholder = "Enter ",
+  label="",
   helperText = "",
   error = false,
   value,
@@ -118,7 +118,7 @@ const CustomizedTextField = ({
           name={name}
           type={type}
           value={value}
-          placeholder={placeholder}
+          placeholder={placeholder+label}
           onChange={(e) => {
             onInputChange(e);
           }}

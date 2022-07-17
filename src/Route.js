@@ -5,21 +5,16 @@ import Loader from './components/Loader';
 import './index.css';  
 import Home from './views/Home';
 import FormPage from './views/FormPage';
-import { checkUserAlreadyLoggedIn } from './utils/reusableFunctions';
 
 const RouteTo = () => {
     const history = useHistory()
 
-    if (checkUserAlreadyLoggedIn()) {
-        history.push('/home')
-    }
 
     return (
          <Suspense fallback={<Loader />}>
             <Router>
             <Switch>
                 <Route exact path="/" component={FormPage} />
-                <Route path="/signup" component={FormPage} />
                 <Route path="/home" component={Home} />
                 <Route path="*" component={FormPage} />
                 </Switch>

@@ -23,11 +23,6 @@ export const sendDataToSentry = ({ name, message, extra, tags }, operation) => {
   error.message = message;
   error.name = name;
   if (!tags) tags = {};
-  tags.severity = getErrorSeverity(
-    error,
-    { name, message, extra, tags },
-    operation
-  );
   // Sentry called
   Sentry.captureException(error, {
     tags,

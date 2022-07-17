@@ -1,19 +1,19 @@
 import React, { useState } from 'react'
 import { useHistory } from "react-router-dom";
-import Loader from '../components/Loader';
-import { checkUserAlreadyLoggedIn } from '../utils/reusableFunctions'
-import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
+import { useLazyQuery,useMutation } from '@apollo/client';
+import { GET_Account_Details } from '../Queries/GET_ACCOUNT_DETAILS';
+import { Insert_User_Details } from '../Queries/Mutations/INSERT_USER_DETAILS';
+
 
 // import Alert from "@material-ui/lab/Alert";
-import {
-  Button,
-} from "@material-ui/core";
+import {Button} from "@material-ui/core";
 
 import CircularProgress from "@material-ui/core/CircularProgress";
 import CustomizedTextField from '../components/CustomizedTextField;';
+import { checkUserAlreadyLoggedIn, checkValidObject, setCurrentUserDetails } from '../utils/reusableFunctions';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -123,27 +123,102 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FormPage() {
     const history = useHistory()
-    const [isSignUp,setIsSignUp]=useState(false)
-    
-    
+  const [isSignUp, setIsSignUp] = useState(false)
+
+
   const classes = useStyles();
 
-  const [values, setValues] = useState({
-    username: "",
-    password: "",
-    email: "",
-  });
+   if (checkUserAlreadyLoggedIn()) {
+        history.push('/home')
+  }
+  const initialvalues = isSignUp ? { username: "", password: "", email: "" } : { password: "", email: "" }
 
-  const [errors, setErrors] = useState({
-    name: "",
-    password: "",
-    email: "",
-    otherErrors: "",
-  });
+  const [values, setValues] = useState({...initialvalues});
+
+  const [errors, setErrors] = useState({ ...initialvalues, otherErrors: ""});
 
   // const [finalValues, setFinalValues] = useState({});
 
   const [loading, setLoading] = useState(false);
+
+  
+  const [addAccount] = useMutation(
+    Insert_User_Details,
+    {
+      onCompleted: () => {
+        console.log(321);
+        setCurrentUserDetails(values.userid, values.username, values.email);
+        setLoading(false)
+      },
+      onError: (err) => {
+        sendDataToSentry({
+          name: 'Sign up',
+          message: 'User Sign up failed',
+          tags: { severity: 'CRITICAL' },
+          extra: [{ type: 'errorEncounter', err }],
+        });
+      },
+    }
+  );
+
+  const [fetchUserDetailAndCheck] = useLazyQuery(
+    GET_Account_Details,
+    { 
+      onCompleted: (res) => {
+        
+        const result = res?.connection?.[0];
+         const userid = result?.userid;
+            const mail = result?.email;
+            const username = result?.username;
+        console.log(res)
+          if(userid&&username&&email) {
+            if (isSignUp) {  setErrors({ ...errors, otherErrors: "User already exist" });
+            setLoading(false); return false}
+            else{
+             
+              setCurrentUserDetails(userid, username, email);
+            
+              setLoading(false);
+              return true;
+           }
+            
+          } else {
+console.log("...")
+            if (isSignUp) {
+               addAccount(
+          {
+            variables: {
+              object: {
+                email:  values.email,
+                username:  values.username,
+                password: values.password
+              }
+            }
+          })
+              console.log('done')
+              return true;
+            }
+
+            setErrors({ ...errors, otherErrors: "Invalid email or password. If you dont have an existed you can create new account" });
+            setLoading(false);
+            return false;
+        }
+      },
+      onError: (err) => {
+        setLoading(false);
+        setErrors('something went wrong');
+        console.error(err);
+        sendDataToSentry({
+          name: 'AccountDetails',
+          message: 'User Login failed',
+          tags: { severity: 'CRITICAL' },
+          extra: [{ type: 'errorEncounter', err }],
+        });
+        return false;
+      },
+      fetchPolicy: 'network-only',
+     }
+  );
 
   const formValidator = (field, val, isOnSubmit = false) => {
     const value = typeof val === "string" ? val.trim() : val;
@@ -200,26 +275,48 @@ export default function FormPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(123)
+    try {
+      
     const newErrors = {};
     let newErr;
     for (const [field, value] of Object.entries(values)) {
       newErr = formValidator(field, value, true);
       newErrors[field] = newErr[field];
     }
-
+console.log(values)
     setErrors(newErrors);
 
-    for (const field of Object.keys(newErrors))
-      if (newErrors[field]) return false;
+      for (const field of Object.keys(newErrors)) {
+      console.log(newErrors[field])
+        if (newErrors[field]) return false;
+      }
 
-
+console.log('start submitting')
     setLoading(true);
-    return true;
+      fetchUserDetailAndCheck({ variables: { email: values.email, password: values.password } })
+     
+      return true;
+    } catch (error) {
+      console.error(error);
+      setErrors({ ...errors, otherErrors: error });
+    }
   };
 
-  const toggleSignUp = (path) => {
+  const toggleSignUp = () => {
+    
     setIsSignUp(!isSignUp);
-    history.push('/path');
+    setValues({
+    username:"",
+    password: "",
+    email: "",
+  });
+    setErrors({
+    username:"",
+    password: "",
+    email: "",
+    otherErrors: "",
+  });
   }
 
 
@@ -235,12 +332,12 @@ export default function FormPage() {
             <Grid item xs={12}>
               {isSignUp && (<CustomizedTextField
                 label="User name *"
-                value={values.name}
+                value={values.username}
                 name="username"
                 onInputChange={onInputChange}
                 onBlurHandler={onBlurHandler}
-                error={!!errors?.name}
-                helperText={errors.name}
+                error={!!errors?.username}
+                helperText={errors.username}
               />)}
             </Grid>
             {/* email */}
@@ -259,6 +356,7 @@ export default function FormPage() {
               <CustomizedTextField
                 name="password"
                 label="Password *"
+                type='password'
                 value={values.password}
                 onInputChange={onInputChange}
                 onBlurHandler={onBlurHandler}
@@ -276,14 +374,14 @@ export default function FormPage() {
                   disableElevation
                   disableRipple
                   className={classes.submitButton}
-                  type="submit"
+                    type="submit"
                 >
-                  {isSignUp? 'Sign up':'Sign in'}
+                  {isSignUp ? 'Sign up':'Sign in'}
                   </Button>
                   
               )}
               Or
-              <div className={classes.toogleSignup} onClick={() => toggleSignUp( isSignUp ? 'signin' : 'signup') }>{isSignUp?'Already have an account':'Create new account'}</div>
+              <div className={classes.toogleSignup} onClick={toggleSignUp }>{isSignUp ?'Already have an account':'Create new account'}</div>
             </Grid>
             <Grid item xs={12}>
               
