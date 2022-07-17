@@ -8,16 +8,17 @@ const useStyles = makeStyles((theme) => ({
     width: '50%',
     height: '100vh',
     overflow: 'hidden',
-    zIndex: 100
+    zIndex: 10000
   },
   img: {
     top: '34% !important',
-    left: '44% !important',
+    left: '20% !important',
     justifyContent: 'center',
     textAlign: 'center',
     alignItems: 'center',
     position: 'absolute',
-    width: '16%',
+    width: '20%',
+    zIndex: 10000
   },
 }));
 

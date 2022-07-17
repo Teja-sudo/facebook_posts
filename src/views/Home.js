@@ -9,6 +9,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import PropTypes from 'prop-types';
 import TabComponent from '../components/TabComponent.js';
+import DialogBox from '../components/DialogBox';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
-const styles = {
+export const styles = {
   card: { justifyContent: 'center' },
   avatar: { height: '52px', width: '52px', fontSize: '26px' },
 
@@ -144,7 +145,7 @@ export default function Home() {
   return (
     <div>
       <Grid container className={classes.wrapper}>
-        <Grid item xs={8}>
+        <Grid item xs={6}>
         <div className={classes.tabsContainer}>
       <Tabs
         value={value}
@@ -158,6 +159,7 @@ export default function Home() {
         </Tabs>
           </div>
         </Grid>
+        <Grid item xs={2}><DialogBox /></Grid>
         <Grid item xs={3}>
           <ProfileCard
               header={user.username}
