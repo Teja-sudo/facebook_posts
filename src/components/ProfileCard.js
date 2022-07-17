@@ -1,5 +1,4 @@
 import React from 'react';
-import { Chip } from 'syscloud-ui-components';
 import { Typography, Avatar, Grid, makeStyles, Badge } from '@material-ui/core';
 import { deepOrange } from '@material-ui/core/colors';
 
@@ -16,7 +15,7 @@ import PropTypes from 'prop-types';
 //   // headerChip: 'Student',
 // };
 
-function Card(props) {
+function ProfileCard(props) {
   const {
     header,
     avatar,
@@ -133,26 +132,7 @@ function Card(props) {
               <Typography className={classes.headerTypo}>{header}</Typography>
             ) : null}
 
-            {headerChip ? (
-              <Chip
-                label={headerChip}
-                styles={{ root: { height: '28px', ...customStyles?.chip } }}
-              />
-            ) : null}
           </Grid>
-          {status?.isStatus && (
-            <Grid item className={classes.subHeader}>
-              <div className={classes.statusWrapper}>
-                {' '}
-                <Typography className={classes.subHeaderTypo}>
-                  {`${status?.keyName}${' '}`}
-                </Typography>
-                <Typography className={classes.active}>
-                  {status?.value}
-                </Typography>
-              </div>
-            </Grid>
-          )}
           {subHeader && (
             <Grid item className={classes.subHeader}>
               <Typography className={classes.subHeaderTypo}>
@@ -175,8 +155,8 @@ function Card(props) {
   );
 }
 
-export default Card;
-Card.propTypes = {
+export default ProfileCard;
+ProfileCard.propTypes = {
   avatar: PropTypes.object,
   subHeader: PropTypes.string,
   userName: PropTypes.string,

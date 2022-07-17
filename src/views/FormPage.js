@@ -122,14 +122,13 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function FormPage() {
-    const history = useHistory()
+  const history = useHistory()
   const [isSignUp, setIsSignUp] = useState(false)
-
-
   const classes = useStyles();
 
-   if (checkUserAlreadyLoggedIn()) {
-        history.push('/home')
+  
+   if (checkUserAlreadyLoggedIn()) { 
+        history.push('/home')       // if user alraedy logged in than redirecting to home page
   }
   const initialvalues = isSignUp ? { username: "", password: "", email: "" } : { password: "", email: "" }
 
@@ -142,7 +141,7 @@ export default function FormPage() {
   const [loading, setLoading] = useState(false);
 
   
-  const [addAccount] = useMutation(
+  const [addAccount] = useMutation(  // performing mutation to insert user details in DB for signing up the user
     Insert_User_Details,
     {
       onCompleted: () => {
@@ -161,7 +160,8 @@ export default function FormPage() {
     }
   );
 
-  const [fetchUserDetailAndCheck] = useLazyQuery(
+  // Fetching user details to check user existed in Data base for both sign in and sign up operations
+  const [fetchUserDetailAndCheck] = useLazyQuery(   
     GET_Account_Details,
     { 
       onCompleted: (res) => {
@@ -171,7 +171,7 @@ export default function FormPage() {
             const mail = result?.email;
             const username = result?.username;
         console.log(res)
-          if(userid&&username&&email) {
+          if(userid && username && email) {
             if (isSignUp) {  setErrors({ ...errors, otherErrors: "User already exist" });
             setLoading(false); return false}
             else{
@@ -183,9 +183,9 @@ export default function FormPage() {
            }
             
           } else {
-console.log("...")
+            console.log("...")
             if (isSignUp) {
-               addAccount(
+            addAccount(
           {
             variables: {
               object: {
