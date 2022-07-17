@@ -23,7 +23,8 @@ const useStyles = makeStyles((theme) => ({
   },
   cardContainer:{margin:'2rem 0'},
   paperRoot: {
-    maxWidth:'48rem',
+    maxWidth: '48rem',
+    width:'48rem',
     position: "absolute",
     top: "100px !important",
     left: "110px",
@@ -43,9 +44,12 @@ const useStyles = makeStyles((theme) => ({
   margin: '0.5rem'
   },
   noPostsContainer: {
-    fontSize: '5rem',
-    maxWidth: '48rem',
-    fontWeight:600
+  color: "#939FC0",
+  padding: "2rem 2rem",
+  fontSize: "5rem",
+  fontWeight: 600,
+  display: "flex",
+  justifyContent: "center"
   }
 }));
 
@@ -212,7 +216,6 @@ export default function TabComp({myPosts,userid=null}) {
   }, [myPosts])
   
 
-
   return (
     <div className={classes.root}>
       {loading && <Loader />}
@@ -221,7 +224,9 @@ export default function TabComp({myPosts,userid=null}) {
 
           const likesCount = post?.allLikes?.countNode?.count ?? 0;
           const isCurrentUserLiked = Boolean(post?.mylike?.likeid);
-          const displayLikesCount=isCurrentUserLiked ? `You and ${likesCount-1} others liked this post` : `${likesCount-1} people liked this post`
+          let displayLikesCount = isCurrentUserLiked ? `You and ${likesCount - 1} others liked this post` : `${likesCount - 1} people liked this post`
+          if (isCurrentUserLiked && likesCount - 1 < 1)
+            displayLikesCount='You liked this post'
 
           return (<Card className={classes.cardRoot}>
             <div className={classes.cardContainer}>
@@ -247,10 +252,10 @@ export default function TabComp({myPosts,userid=null}) {
                 </CardContent>
               </div>
               <CardActions className={classes.cardActionsRoot}>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" onClick={()=>isCurrentUserLiked ? deleteLike(post.postid) : addLike(post.postid)}>
                   {isCurrentUserLiked ? 'Unlike' : 'Like'}
                 </Button>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" onClick={()=>deletePost(post.postid)}>
                   Delete post
                 </Button>
                 <DialogBox buttonName="Edit post" />
@@ -258,7 +263,7 @@ export default function TabComp({myPosts,userid=null}) {
             </div>
           </Card>)
         }) :
-          (<Card className={classes.cardRoot}><div className={classes.noPostsContainer}>No posts</div></Card>)}
+          ( !loading && <Card className={classes.cardRoot}><div className={classes.noPostsContainer}>No posts</div></Card>)}
       </Paper>
     </div>
   );
