@@ -144,9 +144,10 @@ export default function FormPage() {
   const [addAccount] = useMutation(  // performing mutation to insert user details in DB for signing up the user
     Insert_User_Details,
     {
-      onCompleted: () => {
-        console.log(321);
-        setCurrentUserDetails(values.userid, values.username, values.email);
+      onCompleted: (res) => {
+        console.log(res);
+        const user=res.updatedData
+        setCurrentUserDetails(user.userid, user.username, user.email);
         setLoading(false)
       },
       onError: (err) => {
