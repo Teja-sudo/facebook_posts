@@ -17,6 +17,18 @@ import CustomizedTextField from '../components/CustomizedTextField;';
 
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: 'auto',
+      maxWidth: "35rem",
+    padding: "100px 0",
+    [theme.breakpoints.down("sm")]: {
+      padding: "0 50px",
+    },
+    [theme.breakpoints.down("xs")]: {
+      padding: "0 16px",
+      backgroundImage: "none",
+    },
+  },
   container: {
     position: "relative",
     [theme.breakpoints.down("sm")]: {
@@ -57,9 +69,9 @@ const useStyles = makeStyles((theme) => ({
     background: "linear-gradient(127.18deg, #3846FE 0.93%, #6C76FE 98.36%)",
     color: "#FFFFFF",
     fontSize: "1.8rem",
-    fontWeight: "600",
+    fontWeight: "500",
     marginBottom:'1rem',
-    padding: "1.6rem 3.2rem",
+    padding: "1rem 4rem",
     borderRadius: "8px",
     lineHeight: "24px",
     letterSpacing: "0.02em",
@@ -68,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
       background: "linear-gradient(127.18deg, #3846FE 0.93%, #6C76FE 98.36%)",
     },
     textTransform: "none",
-    width: "30%",
+    // width: "30%",
     [theme.breakpoints.down("xs")]: {
       width: "30%",
       padding: "16px 20px",
@@ -108,10 +120,7 @@ export default function FormPage() {
     const history = useHistory()
     const [isSignUp,setIsSignUp]=useState(false)
     
-    if (checkUserAlreadyLoggedIn()) {
-        history.push('/home')
-        return <Loader />
-  }
+    
   const classes = useStyles();
 
   const [values, setValues] = useState({
@@ -209,7 +218,7 @@ export default function FormPage() {
   }
 
 
-  return (
+  return (<div className={classes.root}>
     <div className={classes.container}>
       <div className={classes.formWrapper}>
         <Typography variant="h6" className={classes.title}>
@@ -285,6 +294,7 @@ export default function FormPage() {
           </Grid>
         </form>
       </div>
+    </div>
     </div>
   )
 }

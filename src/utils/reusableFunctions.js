@@ -1,3 +1,5 @@
+import { sendDataToSentry } from "..";
+
 export const SafeJsonParser = (value) => {
   let data = value;
   let error;
@@ -27,6 +29,12 @@ export const getCurrentUserDetails = () => {
      user=JSON.parse( sessionStorage.getItem('currentUser'));
   } catch (error) {
     console.error(error)
+     sendDataToSentry({
+          name: 'Log in',
+          message: 'User Login failed',
+          tags: { severity: 'CRITICAL' },
+          extra: [{ type: 'errorEncounter', err }],
+        });
     user = {};
   }
   return user;
