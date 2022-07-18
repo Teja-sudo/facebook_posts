@@ -16,9 +16,9 @@ Sentry.init({
 });
 
 export const sendDataToSentry = ({ name, message, extra, tags }, operation) => {
-  // if (process.env.NODE_ENV === 'development') {
-  //   return;
-  // }
+  if (process.env.NODE_ENV !== 'production') {
+    return;
+  }
   const error = new Error();
   error.message = message;
   error.name = name;

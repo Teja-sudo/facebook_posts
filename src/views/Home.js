@@ -10,6 +10,9 @@ import Tab from '@material-ui/core/Tab';
 import PropTypes from 'prop-types';
 import TabComponent from '../components/TabComponent.js';
 import DialogBox from '../components/DialogBox';
+import { useMutation } from '@apollo/client';
+import {Insert_Post_Details} from '../Queries/Mutations/INSERT_POST_DETAILS'
+import Loader from '../components/Loader';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -132,6 +135,9 @@ export default function Home() {
   const history = useHistory()
   const user = getCurrentUserDetails();
   const [value, setValue] = React.useState(0);
+  const [postText, setPostText] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [postAdded, setPostAdded] = React.useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -139,9 +145,45 @@ export default function Home() {
   };
 
   const logOut = () => {
-    sessionStorage.clear();
+    localStorage.clear();
     history.push('/')
-}
+  }
+  
+  const [addPostMutation] = useMutation(  
+    Insert_Post_Details,
+    {
+      onCompleted: (res) => {
+        console.log(res);
+        setPostAdded(!postAdded);
+        setLoading(false)
+      },
+      onError: (err) => {
+        console.error(err);
+        sendDataToSentry({
+          name: 'Posts mutation',
+          message: err.message,
+          tags: { severity: 'CRITICAL' },
+          extra: [{ type: 'errorEncounter', err }],
+        });
+      },
+    }
+    );
+  const addPost = async (parameters) => {
+    
+    setLoading(true);
+    await addPostMutation(
+          {
+            variables: {
+              object: {
+                posttext:  parameters.postText,
+                postedby:  user.username,
+                userid: user.userid,
+                email: user.email,
+                postedon: new Date().toISOString()
+                }
+            }
+          })
+  }
 
   return (
     <div>
@@ -160,7 +202,7 @@ export default function Home() {
         </Tabs>
           </div>
         </Grid>
-        <Grid item xs={2}><DialogBox /></Grid>
+        <Grid item xs={2}><DialogBox mutationCallback={addPost} /></Grid>
         <Grid item xs={3}>
           <ProfileCard
               header={user.username}
@@ -192,12 +234,13 @@ export default function Home() {
 
       <Grid container className={classes.tabPanelContainer}>
       <TabPanel value={value} index={0}>
-          <TabComponent myPosts={false } />
+          <TabComponent myPosts={false } postAdded={postAdded}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-          <TabComponent myPosts={true} userid={user.userid } />
+          <TabComponent myPosts={true} userid={user.userid } postAdded={postAdded} />
       </TabPanel>
-        </Grid>
+      </Grid>
+       {loading && <Loader />}
     </div>
   )
 }

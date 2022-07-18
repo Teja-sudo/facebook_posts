@@ -171,7 +171,7 @@ export default function FormPage() {
         
         const result = res?.connection?.[0];
          const userid = result?.userid;
-            const mail = result?.email;
+            const email = result?.email;
             const username = result?.username;
         console.log(res)
           if(userid && username && email) {
@@ -186,7 +186,6 @@ export default function FormPage() {
            }
             
           } else {
-            console.log("...")
             if (isSignUp) {
             addAccount(
           {

@@ -52,7 +52,7 @@ export const setCurrentUserDetails = (userid,username,email) => {
   try {
     localStorage.setItem('loggedInUserid', userid);
     localStorage.setItem('loggedInUsername', username);
-    localStorage.setItem('loggedInEmail', email);
+    localStorage.setItem('loggedInEmailID', email);
   } catch (error) {
     console.error(error);
     sendDataToSentry({
@@ -70,7 +70,7 @@ export const getCurrentUserDetails = () => {
     user = {
       userid : localStorage.getItem('loggedInUserid'),
       username : localStorage.getItem('loggedInUsername'),
-      email : localStorage.getItem('loggedInEmail'),
+      email : localStorage.getItem('loggedInEmailID'),
     }
   } catch (error) {
     console.error(error)

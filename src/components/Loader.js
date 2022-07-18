@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
     width: '50%',
     height: '100vh',
     overflow: 'hidden',
-    zIndex: 10000
+    zIndex: 99999999
   },
   img: {
     top: '34% !important',
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     position: 'absolute',
     width: '20%',
-    zIndex: 10000
+    zIndex: 99999999
   },
 }));
 

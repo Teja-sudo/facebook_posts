@@ -71,7 +71,7 @@ const styles = {
   },
 };
 
-export default function TabComp({myPosts,userid=null}) {
+export default function TabComp({myPosts, userid= null, postAdded}) {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [postsData, setPostsData] = useState([]);
@@ -118,41 +118,6 @@ export default function TabComp({myPosts,userid=null}) {
      }
   );
 
-const [addPostMutation] = useMutation(  
-    mutationQueries.Insert_Post_Details,
-    {
-      onCompleted: (res) => {
-        console.log(res);
-        getPost(true);
-      },
-      onError: (err) => {
-        console.error(err);
-        sendDataToSentry({
-          name: 'Posts mutation',
-          message: err.message,
-          tags: { severity: 'CRITICAL' },
-          extra: [{ type: 'errorEncounter', err }],
-        });
-      },
-    }
-    );
-  const addPost = async (postText = '') => {
-    
-    setLoading(true);
-    await addPostMutation(
-          {
-            variables: {
-              object: {
-                posttext:  postText,
-                postedby:  currentUser.username,
-                userid: currentUser.userid,
-                email: currentUser.email,
-                postedon: new Date().toISOString()
-                }
-            }
-          })
-  }
-
   const [editPostMutation] = useMutation(  
     mutationQueries.Update_Post_Details,
     {
@@ -171,16 +136,16 @@ const [addPostMutation] = useMutation(
       },
     }
     );
-  const editPost = async (postid, postText = '') => {
+  const editPost = async (requiredParams) => {
     
     
     setLoading(true);
     await editPostMutation(
           {
             variables: {
-              postid: postid,
+              postid: requiredParams.postid,
               changes: {
-                posttext:  postText,
+                posttext: requiredParams.postText,
                 postedon: new Date().toISOString()
                   }
             }
@@ -311,7 +276,7 @@ const [addPostMutation] = useMutation(
     return () => {
       ignore = true;
     }
-  }, [myPosts])
+  }, [myPosts, postAdded])
   
 
   return (
@@ -329,11 +294,12 @@ const [addPostMutation] = useMutation(
 
           const likesCount = post?.allLikes?.countNode?.count ?? 0;
           const isCurrentUserLiked = Boolean(post?.mylike?.likeid);
-          console.log(isCurrentUserLiked,post.email)
           let displayLikesCount = isCurrentUserLiked ? `You and ${likesCount - 1} other(s) liked this post` : `${likesCount} people liked this post`
+
           if (isCurrentUserLiked && likesCount - 1 < 1)
-            displayLikesCount = 'You liked this post'
-          const postedOn=DateFormatter(post?.postedon)?.split(',')
+            displayLikesCount = 'You liked this post';
+          const postedOn = DateFormatter(post?.postedon)?.split(',');
+          const deleteAndEditable = myPosts || currentUser.userid == post.userid;
 
           return (<Card className={classes.cardRoot}>
             <div key={index } className={classes.cardContainer}>
@@ -365,13 +331,15 @@ const [addPostMutation] = useMutation(
                 </CardContent>
               </div>
               <CardActions key={index+4} className={classes.cardActionsRoot}>
-                <Button size="small" color="primary" onClick={() => { isCurrentUserLiked ?  deleteLike(post.postid) : addLike(post.postid) }}>
+                <Button size="small" variant="outlined" color="primary" onClick={() => { isCurrentUserLiked ?  deleteLike(post.postid) : addLike(post.postid) }}>
                   {isCurrentUserLiked ? 'Unlike' : 'Like'}
                 </Button>
-                <Button size="small" color="primary" onClick={()=>deletePost(post.postid)}>
-                  Delete post
-                </Button>
-                <DialogBox buttonName="Edit post" />
+                {deleteAndEditable && (
+                    <Button size="small" variant="outlined" color="primary" onClick={()=>deletePost(post.postid)}>
+                      Delete post
+                    </Button>
+                  )}
+                {deleteAndEditable && (<DialogBox buttonName="Edit post" textFieldValue={post?.posttext} mutationCallback={editPost} requiredParams={{postid: post.postid,postText: post?.posttext} } />)}
               </CardActions>
             </div>
           </Card>)

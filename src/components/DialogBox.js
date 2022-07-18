@@ -7,17 +7,24 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-export default function DialogBox({buttonName='Add post'}) {
-  const [open, setOpen] = React.useState(false);
+export default function DialogBox({ buttonName = 'Add post', textFieldValue = '',
+    mutationCallback = () => { }, requiredParams = {} }) {
+    const [open, setOpen] = React.useState(false);
+     const [postText, setPostText] = React.useState(textFieldValue);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
     const handleClose = (e) => {
-      console.log(e?.target)
     setOpen(false);
-  };
+    };
+    
+    const handleSubmitAndClose = () => {
+       const parameters={...requiredParams,postText:postText}
+        mutationCallback(parameters);
+         setOpen(false);
+    }
 
   return (
     <div>
@@ -36,6 +43,8 @@ export default function DialogBox({buttonName='Add post'}) {
             id="name"
             label="Post text"
             type="text"
+            value={postText}
+            onChange={(e)=>setPostText(e.target.value)}
             fullWidth
           />
         </DialogContent>
@@ -43,7 +52,7 @@ export default function DialogBox({buttonName='Add post'}) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleSubmitAndClose} color="primary">
             {buttonName}
           </Button>
         </DialogActions>
