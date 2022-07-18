@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
   profileCard: {
     marginLeft: '2rem',
+    display:'flex'
   },
   cardContent: {
     marginLeft: '1.1rem',
@@ -51,11 +52,19 @@ const useStyles = makeStyles((theme) => ({
   fontWeight: 600,
   display: "flex",
   justifyContent: "center"
-  }
+  },
+  likeIcon: { fontSize: "1.4em", display: "flex", alignItems: "center" },
+  likeIconText: {
+    color: "#626F84",
+  fontSize: "1rem",
+  paddingTop: "5px",
+  paddingLeft: "6px"
+  },
+  button:{padding:'5px 15px', textTransform:'none', width:'15%'}
 }));
 
 const styles = {
-  card: { alignItems: 'flex-start', paddingTop: '12px' },
+  card: { alignItems: 'flex-start', paddingTop: '12px', width:'80%'},
   avatar: { height: '62px', width: '62px', fontSize: '26px' },
   headerTypo: {
     fontSize: '12px',
@@ -300,6 +309,7 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
             displayLikesCount = 'You liked this post';
           const postedOn = DateFormatter(post?.postedon)?.split(',');
           const deleteAndEditable = myPosts || currentUser.userid == post.userid;
+          const likeIcon='👍'
 
           return (<Card className={classes.cardRoot}>
             <div key={index } className={classes.cardContainer}>
@@ -311,12 +321,14 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
                     subHeader={post.email}
                     postedOn={{keyName:'Posted on : ', date:postedOn?.[0], time:postedOn?.[1]}}
                     styles={{
+                      card:styles.card,
                       avatar: styles.avatar,
                       headerTypo: styles.headerTypo,
                       subHeaderTypo: styles.subHeaderTypo,
                       headerGridDiv: styles.headerGridDiv,
               }}
                   />
+                  {likesCount > 0 && <div className={classes.likeIcon}>{likeIcon}<span className={classes.likeIconText}>{ `+${likesCount}`}</span></div>}
                 </div>
                 <CardContent key={index+3} className={classes.cardContent}>
                   <Typography gutterBottom variant="h5" component="h2">
@@ -331,11 +343,11 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
                 </CardContent>
               </div>
               <CardActions key={index+4} className={classes.cardActionsRoot}>
-                <Button size="small" variant="outlined" color="primary" onClick={() => { isCurrentUserLiked ?  deleteLike(post.postid) : addLike(post.postid) }}>
+                <Button className={classes.button} size="small" variant="outlined" color="primary" onClick={() => { isCurrentUserLiked ?  deleteLike(post.postid) : addLike(post.postid) }}>
                   {isCurrentUserLiked ? 'Unlike' : 'Like'}
                 </Button>
                 {deleteAndEditable && (
-                    <Button size="small" variant="outlined" color="primary" onClick={()=>deletePost(post.postid)}>
+                    <Button className={classes.button} size="small" variant="outlined" color="primary" onClick={()=>deletePost(post.postid)}>
                       Delete post
                     </Button>
                   )}
