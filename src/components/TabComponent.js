@@ -108,7 +108,7 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
         const result = res?.connection?.nodes;
         console.log(result)
           if(checkValidArray(result)) {
-           setPostsData(result)
+           setPostsData((prev)=>[...prev,...result])
             setLoading(false);
           } 
       },
@@ -116,7 +116,7 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
       onError: (err) => {
         setLoading(false);
         setOpen(true);
-        setErrors('something went wrong');
+        setErrors(true);
         console.error(err);
         sendDataToSentry({
           name: 'Posts',
@@ -136,10 +136,11 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
     {
       onCompleted: (res) => {
         console.log(res);
+        setErrors(false);
         setPostsRefresh(!postsRefresh);
       },
       onError: (err) => {
-        setErrors('something went wrong');
+        setErrors(true);
         setLoading(false);
         console.error(err);
         sendDataToSentry({
@@ -172,10 +173,11 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
     {
       onCompleted: (res) => {
         console.log(res);
+        setErrors(false);
         setPostsRefresh(!postsRefresh);
       },
       onError: (err) => {
-        setErrors('something went wrong');
+        setErrors(true);
         setLoading(false);
         console.error(err);
         sendDataToSentry({
@@ -203,10 +205,11 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
     {
       onCompleted: (res) => {
         console.log(res);
+        setErrors(false);
          setPostsRefresh(!postsRefresh);
       },
       onError: (err) => {
-        setErrors('something went wrong');
+        setErrors(true);
         setLoading(false);
         console.error(err);
         sendDataToSentry({
@@ -239,10 +242,11 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
     {
       onCompleted: (res) => {
         console.log(res);
+        setErrors(false);
          setPostsRefresh(!postsRefresh);
       },
       onError: (err) => {
-        setErrors('something went wrong');
+        setErrors(true);
         setLoading(false);
         console.error(err);
         sendDataToSentry({
@@ -281,6 +285,7 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
     
     if (error) {
       console.error(error);
+      setErrors(true);
       sendDataToSentry({
           name: 'Posts',
           message: err.message,
