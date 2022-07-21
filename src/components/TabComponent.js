@@ -108,7 +108,7 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
         const result = res?.connection?.nodes;
         console.log(result)
           if(checkValidArray(result)) {
-           setPostsData((prev)=>[...prev,...result])
+           setPostsData([...result])
             setLoading(false);
           } 
       },
@@ -210,7 +210,6 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
       },
       onError: (err) => {
         setErrors(true);
-        setLoading(false);
         console.error(err);
         sendDataToSentry({
           name: 'Posts mutation',
@@ -222,8 +221,6 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
     }
     );
   const addLike = async (postid) => {
-
-    setLoading(true);
    await addLikeMutation(
           {
             variables: {
@@ -247,7 +244,6 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
       },
       onError: (err) => {
         setErrors(true);
-        setLoading(false);
         console.error(err);
         sendDataToSentry({
           name: 'Posts mutation',
@@ -261,7 +257,6 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
   const deleteLike = async (postid) => {
     
     console.log(postid,currentUser.userid)
-    setLoading(true);
     await deleteLikeMutation(
           {
             variables: {
@@ -307,11 +302,9 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
 
   return (
     <div className={classes.root}>
-
       {loading && <Loader />}
-      
-
       <Paper elevation={0} className={classes.paperRoot}>
+        
         {checkValidArray(postsData) ? postsData.map((post,index) => {
 
           const likesCount = post?.allLikes?.countNode?.count ?? 0;

@@ -25,3 +25,26 @@ export const GET_Posts_Details = gql`query GET_Posts_Details($userid: Int, $post
   }
 }
 `;
+
+// query MyQuery {
+//   posts {
+//     userid
+//     postid
+//     postedby
+//     posttext
+//     postedon
+//     email
+//     mylike {
+//       likedby
+//       likedon
+//       likeid
+//       postid
+//       userid
+//     }
+//     allLikes_aggregate {
+//       aggregate {
+//         count(columns: postid)
+//       }
+//     }
+//   }
+// }

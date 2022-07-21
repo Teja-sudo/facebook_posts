@@ -50,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     position: 'fixed',
     zIndex: 1000,
+    paddingLeft:'2.5rem'
   },
   logoutButton: {
     background: "#ff3421",
@@ -189,7 +190,7 @@ export default function Home() {
   return (
     <div>
       <Grid container className={classes.wrapper}>
-        <Grid item xs={6}>
+        <Grid item xs={5}>
         <div className={classes.tabsContainer}>
       <Tabs
         value={value}
@@ -204,7 +205,7 @@ export default function Home() {
           </div>
         </Grid>
         <Grid item xs={2}><DialogBox mutationCallback={addPost} postsRefresh={postsRefresh} setPostsRefresh={setPostsRefresh}/></Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <ProfileCard
               header={user.username}
               subHeader={user.email}
