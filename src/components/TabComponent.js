@@ -17,6 +17,8 @@ import { GET_Posts_Details } from '../Queries/GET_POSTS_DETAILS';
 import { GET_Posts_Likes_Details } from '../Queries/GET_POSTS_LIKES_DETAILS';
 import { checkValidArray, DateFormatter, getCurrentUserDetails } from '../utils/reusableFunctions';
 import { sendDataToSentry } from '../index';
+import { Snackbar } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
   cardRoot: {
@@ -60,7 +62,8 @@ const useStyles = makeStyles((theme) => ({
   paddingTop: "5px",
   paddingLeft: "6px"
   },
-  button:{padding:'5px 15px', textTransform:'none', width:'15%'}
+  button: { padding: '5px 15px', textTransform: 'none', width: '15%' },
+ snackbarContent:{width:'25rem',fontSize:'16px'} 
 }));
 
 const styles = {
@@ -80,14 +83,14 @@ const styles = {
   },
 };
 
-export default function TabComp({myPosts, userid= null, postAdded}) {
+export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRefresh}) {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [postsData, setPostsData] = useState([]);
   const [likesData, setLikesData] = useState([]);
-  const [errors, setErrors] = useState('');
+  const [errors, setErrors] = useState(false);
   const currentUser = getCurrentUserDetails();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -112,6 +115,7 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
 
       onError: (err) => {
         setLoading(false);
+        setOpen(true);
         setErrors('something went wrong');
         console.error(err);
         sendDataToSentry({
@@ -120,7 +124,7 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
           tags: { severity: 'CRITICAL' },
           extra: [{ type: 'errorEncounter', err }],
         });
-        return false;
+        
       },
 
       fetchPolicy: 'network-only',
@@ -132,9 +136,11 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
     {
       onCompleted: (res) => {
         console.log(res);
-        getPost(true);
+        setPostsRefresh(!postsRefresh);
       },
       onError: (err) => {
+        setErrors('something went wrong');
+        setLoading(false);
         console.error(err);
         sendDataToSentry({
           name: 'Posts mutation',
@@ -166,9 +172,11 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
     {
       onCompleted: (res) => {
         console.log(res);
-        getPost(true);
+        setPostsRefresh(!postsRefresh);
       },
       onError: (err) => {
+        setErrors('something went wrong');
+        setLoading(false);
         console.error(err);
         sendDataToSentry({
           name: 'Posts mutation',
@@ -195,9 +203,11 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
     {
       onCompleted: (res) => {
         console.log(res);
-        getPost(true);
+         setPostsRefresh(!postsRefresh);
       },
       onError: (err) => {
+        setErrors('something went wrong');
+        setLoading(false);
         console.error(err);
         sendDataToSentry({
           name: 'Posts mutation',
@@ -229,9 +239,11 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
     {
       onCompleted: (res) => {
         console.log(res);
-        getPost(true);
+         setPostsRefresh(!postsRefresh);
       },
       onError: (err) => {
+        setErrors('something went wrong');
+        setLoading(false);
         console.error(err);
         sendDataToSentry({
           name: 'Posts mutation',
@@ -280,23 +292,19 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
   }
 
   React.useEffect(() => {
-    let ignore=false
-    getPost()
+    let ignore = false;
+    getPost();
     return () => {
       ignore = true;
     }
-  }, [myPosts, postAdded])
-  
+  }, [myPosts, postsRefresh])
+  console.log(postsData,errors)
 
   return (
     <div className={classes.root}>
 
       {loading && <Loader />}
-      {errors && (<Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error">
-          {errors}
-        </Alert>
-      </Snackbar>)}
+      
 
       <Paper elevation={0} className={classes.paperRoot}>
         {checkValidArray(postsData) ? postsData.map((post,index) => {
@@ -311,7 +319,8 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
           const deleteAndEditable = myPosts || currentUser.userid == post.userid;
           const likeIcon='👍'
 
-          return (<Card className={classes.cardRoot}>
+          return (
+            <Card className={classes.cardRoot}>
             <div key={index } className={classes.cardContainer}>
               <div key={index+1 }>
                 <div key={index+2} className={classes.profileCard}>
@@ -351,12 +360,24 @@ export default function TabComp({myPosts, userid= null, postAdded}) {
                       Delete post
                     </Button>
                   )}
-                {deleteAndEditable && (<DialogBox buttonName="Edit post" textFieldValue={post?.posttext} mutationCallback={editPost} requiredParams={{postid: post.postid,postText: post?.posttext} } />)}
+                  {deleteAndEditable && (<DialogBox buttonName="Edit post" textFieldValue={post?.posttext}
+                    postsRefresh={postsRefresh} setPostsRefresh={setPostsRefresh} mutationCallback={editPost}
+                    requiredParams={{ postid: post.postid, postText: post?.posttext }} />)}
               </CardActions>
             </div>
           </Card>)
         }) :
-          ( !loading && <Card className={classes.cardRoot}><div className={classes.noPostsContainer}>No posts</div></Card>)}
+          (!loading &&
+            <Card className={classes.cardRoot}><div className={classes.noPostsContainer}>No posts</div></Card>)}
+        
+        {errors &&
+          (<Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+          <div className={classes.snackbarContent}>
+        <Alert onClose={handleClose} severity="error">
+          Something went wrong
+            </Alert>
+            </div>
+      </Snackbar>)}
       </Paper>
     </div>
   );

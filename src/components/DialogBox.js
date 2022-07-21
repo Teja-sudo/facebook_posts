@@ -7,7 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-export default function DialogBox({ buttonName = 'Add post', textFieldValue = '',
+export default function DialogBox({ buttonName = 'Add post', postsRefresh, textFieldValue = '',
     mutationCallback = () => { }, requiredParams = {} }) {
     const [open, setOpen] = React.useState(false);
      const [postText, setPostText] = React.useState(textFieldValue);
@@ -24,7 +24,15 @@ export default function DialogBox({ buttonName = 'Add post', textFieldValue = ''
        const parameters={...requiredParams,postText:postText}
         mutationCallback(parameters);
          setOpen(false);
+  }
+  React.useEffect(() => {
+    let ignore = false;
+    setPostText(textFieldValue);
+    return () => {
+      ignore = true;
+      setPostText('');
     }
+  }, [buttonName, postsRefresh])
 
   return (
     <div>

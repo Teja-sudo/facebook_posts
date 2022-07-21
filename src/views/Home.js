@@ -137,7 +137,7 @@ export default function Home() {
   const [value, setValue] = React.useState(0);
   const [postText, setPostText] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [postAdded, setPostAdded] = React.useState(false);
+  const [postsRefresh, setPostsRefresh] = React.useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -154,10 +154,11 @@ export default function Home() {
     {
       onCompleted: (res) => {
         console.log(res);
-        setPostAdded(!postAdded);
+        setPostsRefresh(!postsRefresh);
         setLoading(false)
       },
       onError: (err) => {
+        setLoading(false);
         console.error(err);
         sendDataToSentry({
           name: 'Posts mutation',
@@ -202,7 +203,7 @@ export default function Home() {
         </Tabs>
           </div>
         </Grid>
-        <Grid item xs={2}><DialogBox mutationCallback={addPost} /></Grid>
+        <Grid item xs={2}><DialogBox mutationCallback={addPost} postsRefresh={postsRefresh} setPostsRefresh={setPostsRefresh}/></Grid>
         <Grid item xs={3}>
           <ProfileCard
               header={user.username}
@@ -234,10 +235,10 @@ export default function Home() {
 
       <Grid container className={classes.tabPanelContainer}>
       <TabPanel value={value} index={0}>
-          <TabComponent myPosts={false } postAdded={postAdded}/>
+          <TabComponent myPosts={false } postsRefresh={postsRefresh} setPostsRefresh={setPostsRefresh}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-          <TabComponent myPosts={true} userid={user.userid } postAdded={postAdded} />
+          <TabComponent myPosts={true} userid={user.userid} postsRefresh={postsRefresh} setPostsRefresh={setPostsRefresh} />
       </TabPanel>
       </Grid>
        {loading && <Loader />}
