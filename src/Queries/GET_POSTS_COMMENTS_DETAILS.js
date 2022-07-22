@@ -10,5 +10,4 @@ export const GET_Post_Comments_Details = gql`query GET_Posts_Comments_Details($p
     commentedon
   }
 }
-
 `;
