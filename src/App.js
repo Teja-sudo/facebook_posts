@@ -21,7 +21,7 @@ const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache()
 });
-console.log(process.env.HASURA_GRAPHQL_ADMIN_SECRET? 22:'no')
+console.log(REACT_APP_HASURA_GRAPHQL_ADMIN_SECRET? 22:'no')
 
 function App() {
   return (
