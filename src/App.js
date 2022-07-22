@@ -8,7 +8,7 @@ const httpLink = createHttpLink({
   uri: process.env.HASURA_GRAPHQL_ADMIN_SECRET,
 });
 const authLink = setContext((_, { headers }) => {
-  const token = process.env.HASURA_GRAPHQL_ADMIN_SECRET_TOKEN;
+  const token = REACT_APP_HASURA_GRAPHQL_ADMIN_SECRET_TOKEN;
   return {
     headers: {
       ...headers,
@@ -21,7 +21,7 @@ const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache()
 });
-console.log(process.env.HASURA_GRAPHQL_ADMIN_SECRET?11:0)
+console.log(REACT_APP_HASURA_GRAPHQL_ADMIN_SECRET?11:0)
 
 function App() {
   return (
