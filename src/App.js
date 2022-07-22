@@ -22,7 +22,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 console.log(REACT_APP_HASURA_GRAPHQL_ADMIN_SECRET? 11:0)
-console.log(process.env.HASURA_GRAPHQL_ADMIN_SECRET? 22:00)
+console.log(process.env.HASURA_GRAPHQL_ADMIN_SECRET? 22:'no')
 
 function App() {
   return (
