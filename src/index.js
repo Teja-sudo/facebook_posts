@@ -6,7 +6,7 @@ import * as Sentry from "@sentry/react";
 import { BrowserTracing } from "@sentry/tracing";
 
 Sentry.init({
-  dsn: "https://37957ed3b3cb4c888795d62b0d532a3b@o1322033.ingest.sentry.io/6579083",
+  dsn: process.env.SENTRY_DSN,
   integrations: [new BrowserTracing()],
 
   // Set tracesSampleRate to 1.0 to capture 100%

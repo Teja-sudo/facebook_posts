@@ -5,10 +5,10 @@ import RouteTo from './Route';
 import * as Sentry from "@sentry/react";
 
 const httpLink = createHttpLink({
-  uri: process.env.HASURA_GRAPHQL_ADMIN_SECRET || 'https://ts-gql-1.hasura.app/v1/graphql',
+  uri: process.env.HASURA_GRAPHQL_ADMIN_SECRET,
 });
 const authLink = setContext((_, { headers }) => {
-  const token = 'PjmfMm9F3oNEV6nOY0yy1Tyob4IAjJZwKTtbtvyPiZAjtyjpble17EgdpX1RgW83';
+  const token = process.env.HASURA_GRAPHQL_ADMIN_SECRET_TOKEN;
   return {
     headers: {
       ...headers,
