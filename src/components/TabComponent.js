@@ -109,8 +109,8 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
         console.log(result)
           if(checkValidArray(result)) {
            setPostsData([...result])
-            setLoading(false);
-          } 
+        } 
+        setLoading(false);
       },
 
       onError: (err) => {
