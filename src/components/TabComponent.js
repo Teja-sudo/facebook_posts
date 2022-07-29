@@ -266,10 +266,11 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
           })
   }
 
-  const getPost = async (dontsetLoading = false) => {
-    if(!dontsetLoading)
-      setLoading(true);
-    await fetchData({ variables: { userid: userid } })
+  const getPost = async (ignore = false) => {
+    if (!ignore){
+    setLoading(true);
+      await fetchData({ variables: { userid: userid } })
+    }
   }
 
   const getLikes = (dontsetLoading = false) => {
@@ -293,9 +294,10 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
 
   React.useEffect(() => {
     let ignore = false;
-    getPost();
+    getPost(ignore);
     return () => {
       ignore = true;
+      getPost(ignore);
     }
   }, [myPosts, postsRefresh])
   console.log(postsData,errors)
