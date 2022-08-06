@@ -236,10 +236,10 @@ export default function Home() {
 
       <Grid container className={classes.tabPanelContainer}>
       <TabPanel value={value} index={0}>
-          <TabComponent myPosts={false } postsRefresh={postsRefresh} setPostsRefresh={setPostsRefresh}/>
+          <TabComponent myPosts={false } currentUser={user} postsRefresh={postsRefresh} setPostsRefresh={setPostsRefresh}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-          <TabComponent myPosts={true} userid={user.userid} postsRefresh={postsRefresh} setPostsRefresh={setPostsRefresh} />
+          <TabComponent myPosts={true} currentUser={user} userid={user.userid} postsRefresh={postsRefresh} setPostsRefresh={setPostsRefresh} />
       </TabPanel>
       </Grid>
        {loading && <Loader />}

@@ -1,25 +1,19 @@
 import { gql } from '@apollo/client';
 
-export const GET_Posts_Details = gql`query GET_Posts_Details($userid: Int, $postid: Int) {
-  connection: posts_aggregate(where: {userid: {_eq: $userid}, postid: {_eq: $postid}}, order_by: {postedon: desc}) {
-    nodes {
+export const GET_Posts_Details = gql`query GET_Posts_Details($userid: Int, $postid: Int, $likeduserid: Int) {
+  connection: posts(where: {userid: {_eq: $userid}, postid: {_eq: $postid}}, order_by: {postedon: desc}) {
+    postid
+    userid
+    postedby
+    postedon
+    posttext
+    email
+    myLike: likedBy(where: {userid: {_eq: $likeduserid}}) {
       userid
-      postid
-      posttext
-      postedon
-      postedby
-      email
-      mylike {
-        likedby
-        likedon
-        likeid
-        postid
-        userid
-      }
-      allLikes: allLikes_aggregate {
-        countNode: aggregate {
-          count(columns: postid)
-        }
+    }
+    allLikes: likedBy_aggregate {
+      countNode: aggregate {
+        count(columns: postid)
       }
     }
   }

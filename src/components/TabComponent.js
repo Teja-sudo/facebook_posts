@@ -83,13 +83,12 @@ const styles = {
   },
 };
 
-export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRefresh}) {
+export default function TabComp({myPosts,currentUser, userid= null, postsRefresh ,setPostsRefresh}) {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [postsData, setPostsData] = useState([]);
   const [likesData, setLikesData] = useState([]);
   const [errors, setErrors] = useState(false);
-  const currentUser = getCurrentUserDetails();
   const [open, setOpen] = React.useState(true);
 
   const handleClose = (event, reason) => {
@@ -105,10 +104,10 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
     GET_Posts_Details,
     { 
       onCompleted: (res) => {
-        const result = res?.connection?.nodes;
+        const result = res?.connection;
         console.log(result)
           if(checkValidArray(result)) {
-           setPostsData([...result])
+           setPostsData(result)
         } 
         setLoading(false);
       },
@@ -269,28 +268,28 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
   const getPost = async (ignore = false) => {
     if (!ignore){
     setLoading(true);
-      await fetchData({ variables: { userid: userid } })
+      await fetchData({ variables: { userid: userid, likeduserid: currentUser.userid } })
     }
   }
 
-  const getLikes = (dontsetLoading = false) => {
-    const postid= selectedPostDetails?.postid ?? null;
-    query = GET_Posts_Likes_Details;
-    const { data, error, refetch } = useQuery(GET_Posts_Likes_Details,
-      { variables: { userid: currentUser.userid, postid: postid } });
+//   const getLikes = (dontsetLoading = false) => {
+//     const postid= selectedPostDetails?.postid ?? null;
+//     query = GET_Posts_Likes_Details;
+//     const { data, error, refetch } = useQuery(GET_Posts_Likes_Details,
+//       { variables: { userid: currentUser.userid, postid: postid } });
     
-    if (error) {
-      console.error(error);
-      setErrors(true);
-      sendDataToSentry({
-          name: 'Posts',
-          message: err.message,
-          tags: { severity: 'CRITICAL' },
-          extra: [{ type: 'errorEncounter', err }],
-        });
-}
+//     if (error) {
+//       console.error(error);
+//       setErrors(true);
+//       sendDataToSentry({
+//           name: 'Posts',
+//           message: err.message,
+//           tags: { severity: 'CRITICAL' },
+//           extra: [{ type: 'errorEncounter', err }],
+//         });
+// }
   
-  }
+//   }
 
   React.useEffect(() => {
     let ignore = false;
@@ -310,7 +309,7 @@ export default function TabComp({myPosts, userid= null, postsRefresh ,setPostsRe
         {checkValidArray(postsData) ? postsData.map((post,index) => {
 
           const likesCount = post?.allLikes?.countNode?.count ?? 0;
-          const isCurrentUserLiked = Boolean(post?.mylike?.likeid);
+          const isCurrentUserLiked = checkValidArray(post?.myLike);
           let displayLikesCount = isCurrentUserLiked ? `You and ${likesCount - 1} other(s) liked this post` : `${likesCount} people liked this post`
 
           if (isCurrentUserLiked && likesCount - 1 < 1)
