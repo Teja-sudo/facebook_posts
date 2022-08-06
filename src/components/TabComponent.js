@@ -270,6 +270,7 @@ export default function TabComp({myPosts,currentUser, userid= null, postsRefresh
     setLoading(true);
       await fetchData({ variables: { userid: userid, likeduserid: currentUser.userid } })
     }
+    else setPostsData([])
   }
 
 //   const getLikes = (dontsetLoading = false) => {
