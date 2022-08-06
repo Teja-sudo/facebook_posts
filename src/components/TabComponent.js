@@ -127,6 +127,7 @@ export default function TabComp({myPosts,currentUser, userid= null, postsRefresh
       },
 
       fetchPolicy: 'network-only',
+      nextFetchPolicy: 'cache-first'
      }
   );
 
