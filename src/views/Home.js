@@ -170,10 +170,10 @@ export default function Home() {
       },
     }
     );
-  const addPost = async (parameters) => {
+  const addPost =  (parameters) => {
     
     setLoading(true);
-    await addPostMutation(
+    addPostMutation(
           {
             variables: {
               object: {

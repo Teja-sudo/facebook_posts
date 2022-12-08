@@ -152,11 +152,11 @@ export default function TabComp({myPosts,currentUser, userid= null, postsRefresh
       },
     }
     );
-  const editPost = async (requiredParams) => {
+  const editPost =  (requiredParams) => {
     
     
     setLoading(true);
-    await editPostMutation(
+     editPostMutation(
           {
             variables: {
               postid: requiredParams.postid,
@@ -189,10 +189,10 @@ export default function TabComp({myPosts,currentUser, userid= null, postsRefresh
       },
     }
     );
-  const deletePost = async (postid) => {
+  const deletePost =  (postid) => {
     
     setLoading(true);
-    await deletePostMutation(
+     deletePostMutation(
           {
             variables: {
               postid:postid
@@ -220,8 +220,8 @@ export default function TabComp({myPosts,currentUser, userid= null, postsRefresh
       },
     }
     );
-  const addLike = async (postid) => {
-   await addLikeMutation(
+  const addLike =  (postid) => {
+    addLikeMutation(
           {
             variables: {
               object: {
@@ -254,10 +254,10 @@ export default function TabComp({myPosts,currentUser, userid= null, postsRefresh
       },
     }
     );
-  const deleteLike = async (postid) => {
+  const deleteLike = (postid) => {
     
     console.log(postid,currentUser.userid)
-    await deleteLikeMutation(
+     deleteLikeMutation(
           {
             variables: {
               postid: postid,
@@ -266,10 +266,10 @@ export default function TabComp({myPosts,currentUser, userid= null, postsRefresh
           })
   }
 
-  const getPost = async (ignore = false) => {
+  const getPost =  (ignore = false) => {
     if (!ignore){
     setLoading(true);
-      await fetchData({ variables: { userid: userid, likeduserid: currentUser.userid } })
+       fetchData({ variables: { userid: userid, likeduserid: currentUser.userid } })
     }
     else setPostsData([])
   }
